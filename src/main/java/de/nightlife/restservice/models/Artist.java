@@ -14,9 +14,8 @@ public class Artist
 	{
 	}
 
-	public Artist( Long id, String name )
+	public Artist( final String name )
 	{
-		this.id = id;
 		this.name = name;
 	}
 
@@ -25,7 +24,7 @@ public class Artist
 		return id;
 	}
 
-	public void setId( Long id )
+	public void setId( final Long id )
 	{
 		this.id = id;
 	}
@@ -35,7 +34,7 @@ public class Artist
 		return name;
 	}
 
-	public void setName( String name )
+	public void setName( final String name )
 	{
 		this.name = name;
 	}
