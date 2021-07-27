@@ -5,37 +5,31 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Artist
-{
-	private @Id @GeneratedValue Long id;
-	private String name;
+public class Artist {
 
-	public Artist( )
-	{
-	}
+    private @Id @GeneratedValue Long id;
+    private String name;
 
-	public Artist( final String name )
-	{
-		this.name = name;
-	}
+    public Artist() {
+    }
 
-	public Long getId( )
-	{
-		return id;
-	}
+    public Artist(final String name) {
+        this.name = name;
+    }
 
-	public void setId( final Long id )
-	{
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getName( )
-	{
-		return name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setName( final String name )
-	{
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 }
