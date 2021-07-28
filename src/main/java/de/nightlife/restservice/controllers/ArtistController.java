@@ -4,6 +4,7 @@ import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ public class ArtistController {
         this.assembler = assembler;
     }
 
-    @GetMapping("/artists")
+    @GetMapping(value = "/artists", produces = MediaType.APPLICATION_JSON_VALUE)
     CollectionModel<EntityModel<Artist>> getAll() {
         final List<EntityModel<Artist>> artists = artistRepository.findAll()
                 .stream()
@@ -36,7 +37,7 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getAll()).withSelfRel());
     }
 
-    @GetMapping("/artists/{id}")
+    @GetMapping(value = "/artists/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     EntityModel<Artist> getSingle(@PathVariable final Long id) {
         final Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ArtistNotFoundException(id));
