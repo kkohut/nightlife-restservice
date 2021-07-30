@@ -32,7 +32,7 @@ public class GetCollectionArtistTest {
     ArtistRepository artistRepository;
 
     @Test
-    public void get_collectionAuthors_returns_ListOfAuthors_200() throws Exception {
+    public void get_collectionArtists_returns_ListOfArtists() throws Exception {
         final List<Artist> artistList = Arrays.asList(artist1, artist2, artist3);
 
         Mockito.when(artistRepository.findAll()).thenReturn(artistList);
