@@ -1,4 +1,4 @@
-package de.nightlife.restservice.controllers;
+package de.nightlife.restservice.controllers.artist;
 
 public class ArtistNotFoundException extends RuntimeException {
 

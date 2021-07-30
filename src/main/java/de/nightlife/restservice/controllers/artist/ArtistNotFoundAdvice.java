@@ -1,4 +1,4 @@
-package de.nightlife.restservice.controllers;
+package de.nightlife.restservice.controllers.artist;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

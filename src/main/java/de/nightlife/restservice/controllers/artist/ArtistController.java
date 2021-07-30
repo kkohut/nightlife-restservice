@@ -1,12 +1,14 @@
-package de.nightlife.restservice.controllers;
+package de.nightlife.restservice.controllers.artist;
 
 import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,17 +18,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping(value = "/artists")
 public class ArtistController {
 
-    private final ArtistRepository artistRepository;
-    private final ArtistModelAssembler assembler;
+    @Autowired final ArtistRepository artistRepository;
+    @Autowired final ArtistModelAssembler assembler;
 
     public ArtistController(ArtistRepository artistRepository, ArtistModelAssembler assembler) {
         this.artistRepository = artistRepository;
         this.assembler = assembler;
     }
 
-    @GetMapping(value = "/artists", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     CollectionModel<EntityModel<Artist>> getAll() {
         final List<EntityModel<Artist>> artists = artistRepository.findAll()
                 .stream()
@@ -37,7 +40,7 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getAll()).withSelfRel());
     }
 
-    @GetMapping(value = "/artists/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     EntityModel<Artist> getSingle(@PathVariable final Long id) {
         final Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ArtistNotFoundException(id));

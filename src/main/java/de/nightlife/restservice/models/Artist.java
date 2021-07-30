@@ -7,7 +7,9 @@ import javax.persistence.Id;
 @Entity
 public class Artist {
 
-    private @Id @GeneratedValue Long id;
+    @Id @GeneratedValue
+    private Long id;
+
     private String name;
 
     public Artist() {
