@@ -1,5 +1,6 @@
-package de.nightlife.restservice.controllers.artist;
+package de.nightlife.restservice.controllers.artist.ExceptionHandlers;
 
+import de.nightlife.restservice.controllers.artist.Exceptions.ArtistNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

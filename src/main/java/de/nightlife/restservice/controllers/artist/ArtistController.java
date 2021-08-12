@@ -1,15 +1,16 @@
 package de.nightlife.restservice.controllers.artist;
 
+import de.nightlife.restservice.controllers.artist.Exceptions.ArtistInvalidException;
+import de.nightlife.restservice.controllers.artist.Exceptions.ArtistNotFoundException;
 import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,5 +47,15 @@ public class ArtistController {
                 .orElseThrow(() -> new ArtistNotFoundException(id));
 
         return assembler.toModel(artist);
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Artist> postSingle(@RequestBody final Artist newArtist) {
+        final Artist createdArtist = artistRepository.save(newArtist);
+        if (createdArtist == null) {
+            throw new ArtistInvalidException();
+        } else {
+            return new ResponseEntity<>(createdArtist, HttpStatus.CREATED);
+        }
     }
 }
