@@ -54,11 +54,7 @@ public class ArtistController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
     ResponseEntity<Artist> createArtist(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
-        if (createdArtist == null) {
-            throw new ArtistInvalidException();
-        } else {
-            return new ResponseEntity<>(createdArtist, HttpStatus.CREATED);
-        }
+        return new ResponseEntity<>(createdArtist, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "{id}")
