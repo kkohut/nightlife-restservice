@@ -5,6 +5,7 @@ import de.nightlife.restservice.controllers.artist.Exceptions.ArtistNotFoundExce
 import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -50,13 +51,24 @@ public class ArtistController {
         return assembler.toModel(artist);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
     ResponseEntity<Artist> postSingle(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         if (createdArtist == null) {
             throw new ArtistInvalidException();
         } else {
             return new ResponseEntity<>(createdArtist, HttpStatus.CREATED);
+        }
+    }
+
+    @DeleteMapping(value = "{id}")
+    ResponseEntity<Artist> deleteSingle(@PathVariable final Long id) { //TODO add Hyperlinks
+        try {
+            artistRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+
+        } catch (final EmptyResultDataAccessException ex) {
+            return ResponseEntity.notFound().build();
         }
     }
 }
