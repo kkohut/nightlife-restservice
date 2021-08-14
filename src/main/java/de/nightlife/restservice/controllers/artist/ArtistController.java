@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class ArtistController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Artist> postSingle(@RequestBody final Artist newArtist) {
+    ResponseEntity<Artist> postSingle(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         if (createdArtist == null) {
             throw new ArtistInvalidException();

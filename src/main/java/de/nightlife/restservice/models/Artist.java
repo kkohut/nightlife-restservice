@@ -3,6 +3,7 @@ package de.nightlife.restservice.models;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 public class Artist {
@@ -11,6 +12,7 @@ public class Artist {
     @GeneratedValue
     private Long id;
 
+    @NotEmpty
     private String name;
 
     public Artist() {
