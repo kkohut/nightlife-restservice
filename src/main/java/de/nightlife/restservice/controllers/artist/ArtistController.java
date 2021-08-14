@@ -33,18 +33,18 @@ public class ArtistController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    CollectionModel<EntityModel<Artist>> getAll() {
+    CollectionModel<EntityModel<Artist>> getArtistCollection() {
         final List<EntityModel<Artist>> artists = artistRepository.findAll()
                 .stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
         return CollectionModel.of(artists,
-                linkTo(methodOn(ArtistController.class).getAll()).withSelfRel());
+                linkTo(methodOn(ArtistController.class).getArtistCollection()).withSelfRel());
     }
 
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    EntityModel<Artist> getSingle(@PathVariable final Long id) {
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
+    EntityModel<Artist> getSingleArtist(@PathVariable final Long id) {
         final Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ArtistNotFoundException(id));
 
@@ -52,7 +52,7 @@ public class ArtistController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
-    ResponseEntity<Artist> postSingle(@RequestBody @Valid final Artist newArtist) {
+    ResponseEntity<Artist> createArtist(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         if (createdArtist == null) {
             throw new ArtistInvalidException();
@@ -62,7 +62,7 @@ public class ArtistController {
     }
 
     @DeleteMapping(value = "{id}")
-    ResponseEntity<Artist> deleteSingle(@PathVariable final Long id) { //TODO add Hyperlinks
+    ResponseEntity<Artist> deleteArtist(@PathVariable final Long id) { //TODO add Hyperlinks
         try {
             artistRepository.deleteById(id);
             return ResponseEntity.noContent().build();

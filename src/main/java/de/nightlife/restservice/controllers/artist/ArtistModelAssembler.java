@@ -16,8 +16,8 @@ public class ArtistModelAssembler implements SimpleRepresentationModelAssembler<
 	public EntityModel<Artist> toModel(final Artist artist) {
 	    final EntityModel<Artist> artistModel = EntityModel.of(
 	    		artist,
-				linkTo(methodOn(ArtistController.class).getSingle(artist.getId())).withSelfRel(),
-				linkTo(methodOn(ArtistController.class).getAll()).withRel("artists")
+				linkTo(methodOn(ArtistController.class).getSingleArtist(artist.getId())).withSelfRel(),
+				linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("artists")
 		);
 
 	    return artistModel;
@@ -26,11 +26,11 @@ public class ArtistModelAssembler implements SimpleRepresentationModelAssembler<
 	@Override
 	public void addLinks(final EntityModel<Artist> resource) {
 		final Long artistId = resource.getContent().getId();
-		resource.add(linkTo(methodOn(ArtistController.class).getSingle(artistId)).withSelfRel());
+		resource.add(linkTo(methodOn(ArtistController.class).getSingleArtist(artistId)).withSelfRel());
 	}
 
 	@Override
 	public void addLinks(final CollectionModel<EntityModel<Artist>> resources) {
-		resources.add(linkTo(methodOn(ArtistController.class).getAll()).withSelfRel());
+		resources.add(linkTo(methodOn(ArtistController.class).getArtistCollection()).withSelfRel());
 	}
 }
