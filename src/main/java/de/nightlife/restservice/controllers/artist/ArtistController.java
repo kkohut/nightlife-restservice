@@ -51,7 +51,7 @@ public class ArtistController {
         return assembler.toModel(artist);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
     ResponseEntity<Artist> createArtist(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         if (createdArtist == null) {
