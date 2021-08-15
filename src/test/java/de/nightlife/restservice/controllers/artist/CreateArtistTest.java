@@ -35,8 +35,7 @@ public class CreateArtistTest {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/artists")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(newArtistJson)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(newArtistJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("TestArtist"));
     }
@@ -51,8 +50,7 @@ public class CreateArtistTest {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/artists")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(newArtistJson)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(newArtistJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.name").doesNotHaveJsonPath());
     }

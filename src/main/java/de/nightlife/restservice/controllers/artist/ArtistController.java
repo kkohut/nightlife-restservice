@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -41,8 +42,7 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getArtistCollection()).withSelfRel());
     }
 
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-        //TODO add Hyperlinks
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
     EntityModel<Artist> getSingleArtist(@PathVariable final Long id) {
         final Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ArtistNotFoundException(id));
@@ -58,6 +58,11 @@ public class ArtistController {
 
     @PutMapping(value = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
     ResponseEntity<Artist> updateArtist(@RequestBody @Valid final Artist newArtist, @PathVariable Long id) {
+        if (newArtist.getId() != null) {
+            if (!Objects.equals(newArtist.getId(), id)) {
+               return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
         final Artist updatedArtist = artistRepository.findById(id)
                 .map(artist -> {
                     artist.setName(newArtist.getName());
