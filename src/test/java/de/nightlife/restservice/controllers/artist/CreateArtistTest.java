@@ -26,10 +26,10 @@ public class CreateArtistTest {
     ArtistRepository artistRepository;
 
     @Test
-    public void create_artist_existing_returns_newArtist_201() throws Exception {
+    public void create_artist_valid_returns_newArtist_201() throws Exception {
         final Artist newArtist = new Artist("TestArtist");
         final String newArtistJson = mapper.writeValueAsString(newArtist);
-        
+
         Mockito.when(artistRepository.save(any(Artist.class))).thenReturn(newArtist);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -39,5 +39,21 @@ public class CreateArtistTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("TestArtist"));
+    }
+
+    @Test
+    public void create_artist_invalid_emptyName_returns_nothing_400() throws Exception {
+        final Artist newArtist = new Artist("");
+        final String newArtistJson = mapper.writeValueAsString(newArtist);
+
+        Mockito.when(artistRepository.save(any(Artist.class))).thenReturn(newArtist);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/artists")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newArtistJson)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").doesNotHaveJsonPath());
     }
 }
