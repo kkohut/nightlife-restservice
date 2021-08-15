@@ -1,10 +1,8 @@
 package de.nightlife.restservice.controllers.artist;
 
-import de.nightlife.restservice.controllers.artist.Exceptions.ArtistInvalidException;
 import de.nightlife.restservice.controllers.artist.Exceptions.ArtistNotFoundException;
 import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -24,8 +22,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "/artists")
 public class ArtistController {
 
-    @Autowired final ArtistRepository artistRepository;
-    @Autowired final ArtistModelAssembler assembler;
+    final ArtistRepository artistRepository;
+    final ArtistModelAssembler assembler;
 
     public ArtistController(ArtistRepository artistRepository, ArtistModelAssembler assembler) {
         this.artistRepository = artistRepository;
@@ -43,7 +41,8 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getArtistCollection()).withSelfRel());
     }
 
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+        //TODO add Hyperlinks
     EntityModel<Artist> getSingleArtist(@PathVariable final Long id) {
         final Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ArtistNotFoundException(id));
@@ -51,10 +50,25 @@ public class ArtistController {
         return assembler.toModel(artist);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)   //TODO add Hyperlinks
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
     ResponseEntity<Artist> createArtist(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         return new ResponseEntity<>(createdArtist, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) //TODO add Hyperlinks
+    ResponseEntity<Artist> updateArtist(@RequestBody @Valid final Artist newArtist, @PathVariable Long id) {
+        final Artist updatedArtist = artistRepository.findById(id)
+                .map(artist -> {
+                    artist.setName(newArtist.getName());
+                    return artistRepository.save(artist);
+                })
+                .orElseGet(() -> {
+                    newArtist.setId(id);
+                    return artistRepository.save(newArtist);
+                });
+
+        return new ResponseEntity<>(updatedArtist, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "{id}")
