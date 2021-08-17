@@ -10,7 +10,7 @@ public class Artist {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private long id;
 
     @NotEmpty
     private String name;
@@ -22,11 +22,16 @@ public class Artist {
         this.name = name;
     }
 
-    public Long getId() {
+    public Artist(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(final long id) {
         this.id = id;
     }
 
