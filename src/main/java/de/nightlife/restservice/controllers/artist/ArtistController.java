@@ -23,15 +23,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ArtistController {
 
     final ArtistRepository artistRepository;
-    final ArtistModelAssembler assembler;
 
-    public ArtistController(ArtistRepository artistRepository, ArtistModelAssembler assembler) {
+    public ArtistController(ArtistRepository artistRepository) {
         this.artistRepository = artistRepository;
-        this.assembler = assembler;
     }
 
     @GetMapping(value = "/artists", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<CollectionModel<EntityModel<Artist>>> getArtistCollection() {
+    public ResponseEntity<CollectionModel<EntityModel<Artist>>> getArtistCollection() {
         final List<EntityModel<Artist>> artists = StreamSupport.stream(artistRepository.findAll().spliterator(), false)
                 .map(artist -> EntityModel.of(artist,
                         linkTo(methodOn(ArtistController.class).getSingleArtist(artist.getId())).withSelfRel(),
@@ -43,7 +41,7 @@ public class ArtistController {
     }
 
     @GetMapping(value = "/artists/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<EntityModel<Artist>> getSingleArtist(@PathVariable long id) {
+    public ResponseEntity<EntityModel<Artist>> getSingleArtist(@PathVariable long id) {
         return artistRepository.findById(id)
                 .map(artist -> EntityModel.of(artist)
                         .add(
@@ -56,7 +54,7 @@ public class ArtistController {
     }
 
     @PostMapping(value = "/artists", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> createArtist(@RequestBody @Valid final Artist newArtist) {
+    public ResponseEntity<?> createArtist(@RequestBody @Valid final Artist newArtist) {
         final Artist createdArtist = artistRepository.save(newArtist);
         final EntityModel<Artist> createdArtistResource = EntityModel.of(createdArtist,
                 linkTo(methodOn(ArtistController.class).getSingleArtist(createdArtist.getId())).withSelfRel());
@@ -67,9 +65,9 @@ public class ArtistController {
     }
 
     @PutMapping(value = "/artists/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<EntityModel<Artist>> updateArtist(@RequestBody @Valid final Artist newArtist, @PathVariable Long id) {
+    public ResponseEntity<EntityModel<Artist>> updateArtist(@RequestBody @Valid final Artist newArtist, @PathVariable Long id) {
         if (newArtist.getId() != id) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
         final Artist updatedArtist = artistRepository.findById(id)
                 .map(artist -> {
@@ -89,7 +87,7 @@ public class ArtistController {
     }
 
     @DeleteMapping(value = "/artists/{id}")
-    ResponseEntity<Artist> deleteArtist(@PathVariable final Long id) {
+    public ResponseEntity<Artist> deleteArtist(@PathVariable final Long id) {
         try {
             artistRepository.deleteById(id);
             return ResponseEntity.noContent()
