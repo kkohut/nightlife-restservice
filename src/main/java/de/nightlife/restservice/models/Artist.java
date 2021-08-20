@@ -3,9 +3,11 @@ package de.nightlife.restservice.models;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
+@Table(name = "artists")
 public class Artist {
 
     @Id
