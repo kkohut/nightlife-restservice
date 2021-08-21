@@ -23,7 +23,7 @@ public class ArtistController {
 
     final ArtistRepository artistRepository;
 
-    public ArtistController(ArtistRepository artistRepository) {
+    public ArtistController(final ArtistRepository artistRepository) {
         this.artistRepository = artistRepository;
     }
 
@@ -59,7 +59,7 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getSingleArtist(createdArtist.getId())).withSelfRel());
 
         return ResponseEntity.created(
-                createdArtistResource.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                        createdArtistResource.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(createdArtist);
     }
 
@@ -81,7 +81,7 @@ public class ArtistController {
                 linkTo(methodOn(ArtistController.class).getSingleArtist(updatedArtist.getId())).withSelfRel());
 
         return ResponseEntity.created(
-                linkTo(methodOn(ArtistController.class).getSingleArtist(updatedArtist.getId())).toUri())
+                        linkTo(methodOn(ArtistController.class).getSingleArtist(updatedArtist.getId())).toUri())
                 .body(updatedArtistResource);
     }
 

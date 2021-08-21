@@ -36,6 +36,16 @@ public class Event {
     public Event() {
     }
 
+    public Event(final String name, final LocalDate startDate, final LocalDate endDate, final Set<String> imageUrls,
+                 final String venueName, final String city) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.imageUrls = imageUrls;
+        this.venueName = venueName;
+        this.city = city;
+    }
+
     public long getId() {
         return id;
     }
