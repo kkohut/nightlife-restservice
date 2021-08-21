@@ -1,6 +1,5 @@
 package de.nightlife.restservice.controllers;
 
-import de.nightlife.restservice.controllers.artist.ArtistController;
 import de.nightlife.restservice.models.Artist;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;

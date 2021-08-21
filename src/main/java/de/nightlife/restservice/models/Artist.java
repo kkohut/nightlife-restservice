@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 public class Artist {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "artist_sequence")
     @Column(name = "id", nullable = false)
     private long id;
 

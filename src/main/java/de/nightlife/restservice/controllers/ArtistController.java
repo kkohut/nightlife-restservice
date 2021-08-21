@@ -1,4 +1,4 @@
-package de.nightlife.restservice.controllers.artist;
+package de.nightlife.restservice.controllers;
 
 import de.nightlife.restservice.models.Artist;
 import de.nightlife.restservice.repositories.ArtistRepository;
@@ -23,7 +23,7 @@ public class ArtistController {
 
     final ArtistRepository artistRepository;
 
-    public ArtistController(final ArtistRepository artistRepository) {
+    public ArtistController(ArtistRepository artistRepository) {
         this.artistRepository = artistRepository;
     }
 

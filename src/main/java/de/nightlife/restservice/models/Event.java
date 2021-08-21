@@ -9,7 +9,7 @@ import java.util.Set;
 @Table(name = "events")
 public class Event {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_sequence")
     @Column(name = "id", nullable = false)
     private long id;
 
