@@ -1,9 +1,6 @@
 package de.nightlife.restservice.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
@@ -12,20 +9,17 @@ public class Artist {
 
     @Id
     @GeneratedValue
+    @Column(name = "id", nullable = false)
     private long id;
 
     @NotEmpty
+    @Column(name = "name", nullable= false)
     private String name;
 
     public Artist() {
     }
 
     public Artist(final String name) {
-        this.name = name;
-    }
-
-    public Artist(final Long id, final String name) {
-        this.id = id;
         this.name = name;
     }
 
