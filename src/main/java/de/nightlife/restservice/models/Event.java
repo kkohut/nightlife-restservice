@@ -3,6 +3,7 @@ package de.nightlife.restservice.models;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -10,7 +11,7 @@ import java.util.Set;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_sequence")
-    @Column(name = "id", nullable = false)
+    @Column(name = "event_id", nullable = false)
     private long id;
 
     @NotEmpty
@@ -32,6 +33,15 @@ public class Event {
 
     @Column(name = "city")
     private String city;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "artists")
+    @JoinTable(                             // TODO überarbeiten!
+            name = "events_participating",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private Set<Artist> artists;
 
     public Event() {
     }
@@ -100,5 +110,23 @@ public class Event {
 
     public void setCity(final String city) {
         this.city = city;
+    }
+
+    public Set<Artist> getArtists() {
+        return artists;
+    }
+
+    public void setArtists(final Set<Artist> artists) {
+        this.artists = artists;
+    }
+
+    public void addArtist(final Artist artist) {
+        this.artists.add(artist);
+        artist.getEvents().add(this);
+    }
+
+    public void removeArtist (final Artist artist) {
+        this.artists.remove(artist);
+        artist.getEvents().remove(this);
     }
 }

@@ -1,7 +1,9 @@
 package de.nightlife.restservice.controllers;
 
 import de.nightlife.restservice.models.Artist;
+import de.nightlife.restservice.models.Event;
 import de.nightlife.restservice.repositories.ArtistRepository;
+import de.nightlife.restservice.repositories.EventRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,8 +26,11 @@ public class ArtistController {
 
     final ArtistRepository artistRepository;
 
-    public ArtistController(ArtistRepository artistRepository) {
+    final EventRepository eventRepository;
+
+    public ArtistController(ArtistRepository artistRepository, EventRepository eventRepository) {
         this.artistRepository = artistRepository;
+        this.eventRepository = eventRepository;
     }
 
     @GetMapping(value = "/artists", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -99,4 +105,29 @@ public class ArtistController {
                     .build();
         }
     }
+
+    @PutMapping(value = "/artists/{artistId}/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EntityModel<Artist>> addEventToArtist(@PathVariable Long artistId, @PathVariable Long eventId) {
+        final Optional<Event> newEvent = eventRepository.findById(eventId);
+        final Optional<Artist> updatedArtist = artistRepository.findById(artistId)
+                .map(artist -> {
+                    if (newEvent.isPresent()) {
+                        artist.addEvent(newEvent.get());
+                    }
+                    return artistRepository.save(artist);
+                });
+
+        if (updatedArtist.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        final EntityModel<Artist> updatedArtistResource = EntityModel.of(updatedArtist.get(),
+                linkTo(methodOn(EventController.class).getSingleEvent(updatedArtist.get().getId())).withSelfRel());
+
+
+        return ResponseEntity.created(
+                        linkTo(methodOn(ArtistController.class).getSingleArtist(updatedArtist.get().getId())).toUri())
+                .body(updatedArtistResource);
+    }
+
 }
