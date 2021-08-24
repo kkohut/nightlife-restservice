@@ -1,9 +1,12 @@
 package de.nightlife.restservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -34,6 +37,7 @@ public class Event {
     @Column(name = "city")
     private String city;
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Column(name = "artists")
     @JoinTable(                             // TODO überarbeiten!
@@ -42,6 +46,10 @@ public class Event {
             inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
     private Set<Artist> artists;
+
+    @JsonProperty("artists")
+    @Transient
+    private Set<ArtistDTO> artistDTOs;
 
     public Event() {
     }
@@ -54,6 +62,7 @@ public class Event {
         this.imageUrls = imageUrls;
         this.venueName = venueName;
         this.city = city;
+        this.artists = new HashSet<>();
     }
 
     public long getId() {
@@ -118,6 +127,18 @@ public class Event {
 
     public void setArtists(final Set<Artist> artists) {
         this.artists = artists;
+    }
+
+    public Set<ArtistDTO> getArtistDTOs() {
+        this.artistDTOs = new HashSet<>();
+        for (final Artist artist : this.artists) {
+            this.artistDTOs.add(new ArtistDTO(artist));
+        }
+        return artistDTOs;
+    }
+
+    public void setArtistDTOs(final Set<ArtistDTO> artistDTOs) {
+        this.artistDTOs = artistDTOs;
     }
 
     public void addArtist(final Artist artist) {

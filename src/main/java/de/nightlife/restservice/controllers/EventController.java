@@ -1,6 +1,7 @@
 package de.nightlife.restservice.controllers;
 
 import de.nightlife.restservice.models.Artist;
+import de.nightlife.restservice.models.ArtistDTO;
 import de.nightlife.restservice.models.Event;
 import de.nightlife.restservice.repositories.ArtistRepository;
 import de.nightlife.restservice.repositories.EventRepository;
@@ -13,9 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -64,7 +65,7 @@ public class EventController {
                 linkTo(methodOn(EventController.class).getSingleEvent(createdEvent.getId())).withSelfRel());
 
         return ResponseEntity.created(
-                        createdEventResource.getRequiredLink(IanaLinkRelations.SELF).toUri()) .body(createdEvent);
+                createdEventResource.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(createdEvent);
     }
 
     @PutMapping(value = "/events/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -105,12 +106,48 @@ public class EventController {
         }
     }
 
+    @GetMapping(value = "/events/{eventId}/artists", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<EntityModel<Artist>>> getArtistCollectionOfEvent(@PathVariable final long eventId) {
+        final Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        final List<EntityModel<Artist>> artistsOfEvent = event.get()
+                .getArtists()
+                .stream()
+                .map(artist -> EntityModel.of(artist)
+                        .add(linkTo(methodOn(ArtistController.class).getSingleArtist(artist.getId())).withSelfRel())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(artistsOfEvent));
+    }
+
+    @GetMapping(value = "/events/{eventId}/artists/{artistId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EntityModel<Artist>> getSingleArtistOfEvent(@PathVariable final long eventId, @PathVariable final long artistId) {
+        final Optional<Event> event = eventRepository.findById(eventId);
+        if (event.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        final Optional<Artist> artistOfEvent = event.get()
+                .getArtists()
+                .stream()
+                .filter(artist -> artist.getId() == artistId)
+                .findFirst();
+
+        if (artistOfEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(EntityModel.of(artistOfEvent.get())
+                .add(
+                        linkTo(methodOn(EventController.class).unlinkArtistFromEvent(eventId, artistId)).withRel("unlink-artist-from-event")
+                ));
+    }
+
     @PutMapping(value = "/events/{eventId}/artists/{artistId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<Event>> addArtistToEvent(@PathVariable Long eventId, @PathVariable Long artistId) {
+    public ResponseEntity<CollectionModel<EntityModel<ArtistDTO>>> linkArtistToEvent(@PathVariable Long eventId, @PathVariable Long artistId) throws URISyntaxException {
         final Optional<Artist> newArtist = artistRepository.findById(artistId);
         final Optional<Event> updatedEvent = eventRepository.findById(eventId)
                 .map(event -> {
-                    Set<Artist> artistsOfEvent = event.getArtists();
                     if (newArtist.isPresent()) {
                         event.addArtist(newArtist.get());
                     }
@@ -121,13 +158,32 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
 
-        final EntityModel<Event> updatedEventResource = EntityModel.of(updatedEvent.get(),
-                linkTo(methodOn(EventController.class).getSingleEvent(updatedEvent.get().getId())).withSelfRel());
-
+        final List<EntityModel<ArtistDTO>> artistDTOs = StreamSupport.stream(updatedEvent.get().getArtistDTOs().spliterator(), false)
+                .map(artist -> EntityModel.of(artist,
+                        linkTo(methodOn(ArtistController.class).getSingleArtist(artist.getId())).withSelfRel()))
+                .collect(Collectors.toList());
 
         return ResponseEntity.created(
-                        linkTo(methodOn(EventController.class).getSingleEvent(updatedEvent.get().getId())).toUri())
-                .body(updatedEventResource);
+                        linkTo(methodOn(EventController.class).getSingleArtistOfEvent(eventId, artistId)).toUri())
+                .body(CollectionModel.of(artistDTOs));
+    }
+
+    @DeleteMapping(value = "/events/{eventId}/artists/{artistId}")
+    public ResponseEntity<Event> unlinkArtistFromEvent(@PathVariable final Long eventId, @PathVariable final Long artistId) {
+        final Optional<Event> updatedEvent = eventRepository.findById(eventId)
+                .map(event -> {
+                    for (final Artist artist : event.getArtists()) {
+                        if (artist.getId() == artistId) {
+                            event.removeArtist(artist);
+                            break;
+                        }
+                    }
+                    return eventRepository.save(event);
+                });
+
+        if (updatedEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
-

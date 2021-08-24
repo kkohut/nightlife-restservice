@@ -1,11 +1,11 @@
 package de.nightlife.restservice.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,8 +21,13 @@ public class Artist {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Event> events;
+
+    @JsonProperty("events")
+    @Transient
+    private Set<EventDTO> eventDTOs;
 
     public Artist() {
     }
@@ -53,6 +58,18 @@ public class Artist {
 
     public void setEvents(Set<Event> events) {
         this.events = events;
+    }
+
+    public Set<EventDTO> getEventDTOs() {
+        this.eventDTOs= new HashSet<>();
+        for (final Event event: this.events) {
+            this.eventDTOs.add(new EventDTO(event));
+        }
+        return eventDTOs;
+    }
+
+    public void setEventDTOs(final Set<EventDTO> eventDTOs) {
+        this.eventDTOs = eventDTOs;
     }
 
     public void addEvent(final Event event) {
