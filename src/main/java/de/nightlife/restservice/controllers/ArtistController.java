@@ -131,7 +131,7 @@ public class ArtistController {
         final Optional<Event> eventOfArtist = artist.get()
                 .getEvents()
                 .stream()
-                .filter(event-> event.getId() == eventId)
+                .filter(event -> event.getId() == eventId)
                 .findFirst();
 
         if (eventOfArtist.isEmpty()) {
@@ -159,7 +159,7 @@ public class ArtistController {
         }
 
         final List<EntityModel<EventDTO>> eventDTOs = updatedArtist.get().getEventDTOs().stream()
-                .map(event-> EntityModel.of(event,
+                .map(event -> EntityModel.of(event,
                         linkTo(methodOn(EventController.class).getSingleEvent(event.getId())).withSelfRel()))
                 .collect(Collectors.toList());
 
@@ -168,6 +168,23 @@ public class ArtistController {
                 .body(CollectionModel.of(eventDTOs));
     }
 
-    // TODO add unlink eventFromArtist
+    @DeleteMapping(value = "/artists/{artistId}/events/{eventId}")
+    public ResponseEntity<Event> unlinkEventFromArtist(@PathVariable final Long artistId, @PathVariable final Long eventId) {
+        final Optional<Artist> updatedArtist = artistRepository.findById(artistId)
+                .map(artist -> {
+                    for (final Event event : artist.getEvents()) {
+                        if (event.getId() == eventId) {
+                            artist.removeEvent(event);
+                            break;
+                        }
+                    }
+                    return artistRepository.save(artist);
+                });
+
+        if (updatedArtist.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+    }
 
 }
