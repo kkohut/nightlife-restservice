@@ -107,6 +107,21 @@ public class ArtistController {
         }
     }
 
+    @GetMapping(value = "/artists/{artistId}/events", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<EntityModel<Event>>> getEventCollectionOfArtist(@PathVariable final long artistId) {
+        final Optional<Artist> artist = artistRepository.findById(artistId);
+        if (artist.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        final List<EntityModel<Event>> eventsOfArtist = artist.get()
+                .getEvents()
+                .stream()
+                .map(event -> EntityModel.of(event)
+                        .add(linkTo(methodOn(EventController.class).getSingleEvent(event.getId())).withSelfRel())).collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(eventsOfArtist));
+    }
+
     @GetMapping(value = "/artists/{artistId}/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EntityModel<Event>> getSingleEventOfArtist(@PathVariable final long artistId, @PathVariable final long eventId) {
         final Optional<Artist> artist = artistRepository.findById(artistId);
@@ -129,7 +144,7 @@ public class ArtistController {
     }
 
     @PutMapping(value = "/artists/{artistId}/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionModel<EntityModel<EventDTO>>> addEventToArtist(@PathVariable Long artistId, @PathVariable Long eventId) {
+    public ResponseEntity<CollectionModel<EntityModel<EventDTO>>> linkEventToArtist(@PathVariable Long artistId, @PathVariable Long eventId) {
         final Optional<Event> newEvent = eventRepository.findById(eventId);
         final Optional<Artist> updatedArtist = artistRepository.findById(artistId)
                 .map(artist -> {
@@ -152,5 +167,7 @@ public class ArtistController {
                         linkTo(methodOn(ArtistController.class).getSingleEventOfArtist(artistId, eventId)).toUri())
                 .body(CollectionModel.of(eventDTOs));
     }
+
+    // TODO add unlink eventFromArtist
 
 }
