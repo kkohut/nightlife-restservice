@@ -53,7 +53,8 @@ public class EventController {
                                 linkTo(methodOn(EventController.class).getSingleEvent(event.getId())).withSelfRel(),
                                 linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-all-events"),
                                 linkTo(methodOn(EventController.class).updateEvent(event, event.getId())).withRel("update-event"),
-                                linkTo(methodOn(EventController.class).deleteEvent(event.getId())).withRel("delete-event")))
+                                linkTo(methodOn(EventController.class).deleteEvent(event.getId())).withRel("delete-event"),
+                                linkTo(methodOn(EventController.class).getArtistCollectionOfEvent(event.getId())).withRel("get-artist-collection-of-event")))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -116,9 +117,10 @@ public class EventController {
                 .getArtists()
                 .stream()
                 .map(artist -> EntityModel.of(artist)
-                        .add(linkTo(methodOn(ArtistController.class).getSingleArtist(artist.getId())).withSelfRel())).collect(Collectors.toList());
+                        .add(linkTo(methodOn(EventController.class).getSingleArtistOfEvent(eventId, artist.getId())).withSelfRel())).collect(Collectors.toList());
 
-        return ResponseEntity.ok(CollectionModel.of(artistsOfEvent));
+        return ResponseEntity.ok(CollectionModel.of(artistsOfEvent)
+                .add(linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection")));
     }
 
     @GetMapping(value = "/events/{eventId}/artists/{artistId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -138,8 +140,8 @@ public class EventController {
         }
 
         return ResponseEntity.ok(EntityModel.of(artistOfEvent.get())
-                .add(
-                        linkTo(methodOn(EventController.class).unlinkArtistFromEvent(eventId, artistId)).withRel("unlink-artist-from-event")
+                .add(linkTo(methodOn(EventController.class).unlinkArtistFromEvent(event.get().getId(), artistOfEvent.get().getId())).withRel("unlink-artist-from-event"),
+                        linkTo(methodOn(EventController.class).getArtistCollectionOfEvent(event.get().getId())).withRel("get-artist-collection-of-event")
                 ));
     }
 
@@ -164,7 +166,7 @@ public class EventController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.created(
-                        linkTo(methodOn(EventController.class).getSingleArtistOfEvent(eventId, artistId)).toUri())
+                        linkTo(methodOn(EventController.class).getSingleArtistOfEvent(updatedEvent.get().getId(), artistId)).toUri())
                 .body(CollectionModel.of(artistDTOs));
     }
 
@@ -182,8 +184,12 @@ public class EventController {
                 });
 
         if (updatedEvent.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                    .header("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection").toString())
+                    .build();
         }
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .header("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection").toString())
+                .build();
     }
 }

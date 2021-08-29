@@ -40,7 +40,7 @@ public class Event {
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Column(name = "artists")
-    @JoinTable(                             // TODO überarbeiten!
+    @JoinTable(
             name = "events_participating",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id")
