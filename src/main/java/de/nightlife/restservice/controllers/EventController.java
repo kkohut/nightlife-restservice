@@ -23,6 +23,7 @@ import java.util.stream.StreamSupport;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 public class EventController {
     final EventRepository eventRepository;
