@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 
 @Configuration
@@ -30,14 +31,14 @@ public class LoadDatabase {
             log.info("Preloading " + artistRepository.save(artist3));
 
 
-            Event event1 = new Event("TestEvent1", null, null,
-                    null, "TestVenue1", "City1");
+            Event event1 = new Event("TestEvent1", LocalDate.of(2021, 10, 31), LocalDate.of(2021, 11, 1),
+                    null, "Musterhalle", "Musterstadt");
             event1.setArtists(new HashSet<>());
-            Event event2 = new Event("TestEvent2", null, null,
-                    null, "TestVenue2", "City2");
+            Event event2 = new Event("TestEvent2", LocalDate.of(2021, 12, 31), LocalDate.of(2022, 01, 01),
+                    null, "Cool Club", "Cool City");
             event2.setArtists(new HashSet<>());
-            Event event3 = new Event("TestEvent3", null, null,
-                    null, "TestVenue3", "City3");
+            Event event3 = new Event("TestEvent3", LocalDate.of(2023, 07, 10), LocalDate.of(2023, 07, 11),
+                    null, "Party Base", "Party City");
             event3.setArtists(new HashSet<>());
 
             log.info("Preloading " + eventRepository.save(event1));
