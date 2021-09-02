@@ -18,10 +18,11 @@ public class DispatcherController {
     @GetMapping(value = "/")
     public ResponseEntity getDispatcher() {
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-all-artists").toString());
-        responseHeaders.set("Link", linkTo(methodOn(ArtistController.class).createArtist(new Artist())).withRel("create-artist").toString());
-        responseHeaders.set("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-all-events").toString());
-        responseHeaders.set("Link", linkTo(methodOn(EventController.class).createEvent(new Event())).withRel("create-event").toString());
+        responseHeaders.add("Access-Control-Expose-Headers", "Link");
+        responseHeaders.add("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-artist-collection").toString());
+        responseHeaders.add("Link", linkTo(methodOn(ArtistController.class).createArtist(new Artist())).withRel("create-artist").toString());
+        responseHeaders.add("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection").toString());
+        responseHeaders.add("Link", linkTo(methodOn(EventController.class).createEvent(new Event())).withRel("create-event").toString());
 
         return ResponseEntity.ok()
                 .headers(responseHeaders)
