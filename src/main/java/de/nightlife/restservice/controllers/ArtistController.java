@@ -99,11 +99,13 @@ public class ArtistController {
         try {
             artistRepository.deleteById(id);
             return ResponseEntity.noContent()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-artist-collection").toString())
                     .build();
 
         } catch (final EmptyResultDataAccessException ex) {
             return ResponseEntity.notFound()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-artist-collection").toString())
                     .build();
         }
@@ -186,10 +188,12 @@ public class ArtistController {
 
         if (updatedArtist.isEmpty()) {
             return ResponseEntity.notFound()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-event-collection-of-artist").toString())
                     .build();
         }
         return ResponseEntity.noContent()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("Link", linkTo(methodOn(ArtistController.class).getArtistCollection()).withRel("get-event-collection-of-artist").toString())
                     .build();
     }

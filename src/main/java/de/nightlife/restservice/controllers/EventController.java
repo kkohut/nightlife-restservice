@@ -98,11 +98,13 @@ public class EventController {
         try {
             eventRepository.deleteById(id);
             return ResponseEntity.noContent()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("get-all-events", linkTo(methodOn(EventController.class).getEventCollection()).toString())
                     .build();
 
         } catch (final EmptyResultDataAccessException ex) {
             return ResponseEntity.notFound()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("get-all-events", linkTo(methodOn(EventController.class).getEventCollection()).toString())
                     .build();
         }
@@ -186,10 +188,12 @@ public class EventController {
 
         if (updatedEvent.isEmpty()) {
             return ResponseEntity.notFound()
+                    .header("Access-Control-Expose-Headers", "Link")
                     .header("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection").toString())
                     .build();
         }
         return ResponseEntity.noContent()
+                .header("Access-Control-Expose-Headers", "Link")
                 .header("Link", linkTo(methodOn(EventController.class).getEventCollection()).withRel("get-event-collection").toString())
                 .build();
     }
