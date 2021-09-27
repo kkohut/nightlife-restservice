@@ -31,13 +31,13 @@ public class LoadDatabase {
             log.info("Preloading " + artistRepository.save(artist3));
 
 
-            Event event1 = new Event("TestEvent1", LocalDate.of(2021, 10, 31), LocalDate.of(2021, 11, 1),
+            Event event1 = new Event("Loud Event", LocalDate.of(2021, 10, 31), LocalDate.of(2021, 11, 1),
                     null, "Musterhalle", "Musterstadt");
             event1.setArtists(new HashSet<>());
-            Event event2 = new Event("TestEvent2", LocalDate.of(2021, 12, 31), LocalDate.of(2022, 01, 01),
+            Event event2 = new Event("Dummy Dance", LocalDate.of(2021, 12, 31), LocalDate.of(2022, 01, 01),
                     null, "Cool Club", "Cool City");
             event2.setArtists(new HashSet<>());
-            Event event3 = new Event("TestEvent3", LocalDate.of(2023, 07, 10), LocalDate.of(2023, 07, 11),
+            Event event3 = new Event("Big Festival", LocalDate.of(2023, 07, 10), LocalDate.of(2023, 07, 11),
                     null, "Party Base", "Party City");
             event3.setArtists(new HashSet<>());
 
